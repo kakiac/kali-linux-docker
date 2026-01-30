@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  kali:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kali-linux-edu:latest
+    container_name: kali-linux-classroom
+    hostname: kali-edu
+    
+    # Keep container running
+    stdin_open: true
+    tty: true
+    
+    # Networking configuration
+    network_mode: bridge
+    
+    # Privileged mode for network tools (use with caution)
+    # Only enable if needed for advanced network scanning
+    # privileged: true
+    
+    # Add specific capabilities instead of privileged mode
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    
+    # Volume mounts for persistent storage
+    volumes:
+      - ./workspace:/home/kali/workspace
+      - ./labs:/home/kali/labs
+      - ./tools:/home/kali/tools
+    
+    # Environment variables
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - TZ=${TZ:-UTC}
+    
+    # Resource limits (adjust based on your system)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    
+    # Restart policy
+    restart: unless-stopped
