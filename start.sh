@@ -16,30 +16,36 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-# Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+# Detect Docker Compose command (v1 uses docker-compose, v2 uses docker compose)
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &> /dev/null 2>&1; then
+    DOCKER_COMPOSE="docker compose"
+else
     echo "Error: Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
 
+echo "Using Docker Compose command: $DOCKER_COMPOSE"
+echo ""
+
 # Create workspace directories if they don't exist
 echo "Creating workspace directories..."
 mkdir -p workspace labs tools
-touch workspace/.gitkeep labs/.gitkeep tools/.gitkeep
 
 # Check if image exists, if not build it
 if [[ "$(docker images -q kali-linux-edu:latest 2> /dev/null)" == "" ]]; then
     echo "Building Kali Linux Docker image (this may take a while)..."
-    docker-compose build
+    $DOCKER_COMPOSE build
 else
     echo "Kali Linux image already exists. Skipping build."
-    echo "To rebuild, run: docker-compose build --no-cache"
+    echo "To rebuild, run: $DOCKER_COMPOSE build --no-cache"
 fi
 
 # Start the container
 echo ""
 echo "Starting Kali Linux container..."
-docker-compose up -d
+$DOCKER_COMPOSE up -d
 
 # Check if container is running
 if [ "$(docker ps -q -f name=kali-linux-classroom)" ]; then
@@ -55,6 +61,6 @@ if [ "$(docker ps -q -f name=kali-linux-classroom)" ]; then
 else
     echo ""
     echo "✗ Failed to start the container. Please check Docker logs."
-    docker-compose logs
+    $DOCKER_COMPOSE logs
     exit 1
 fi

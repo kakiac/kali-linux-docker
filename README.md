@@ -198,8 +198,13 @@ deploy:
 ### Tips
 
 - Use `sudo` for commands requiring elevated privileges
-- Default password for kali user: `kali`
+- Default username: `kali`, default password: `kali`
 - Install additional tools with: `sudo apt-get install <tool-name>`
+
+**Note on Default Credentials**: This environment uses well-known default credentials (`kali:kali`) and passwordless sudo for educational convenience. In production environments, you should always:
+- Use strong, unique passwords
+- Require password authentication for sudo commands
+- Follow principle of least privilege
 
 ## 🔒 Security Considerations
 
@@ -211,7 +216,19 @@ deploy:
 
 ### Container Security
 
-- The container runs with limited capabilities by default
+**Educational Trade-offs:**
+This environment prioritizes ease of use for learning, with intentional security simplifications:
+- Default password (`kali:kali`) is well-known - acceptable for isolated learning
+- Passwordless sudo enabled - convenient for students but not production-ready
+- Network capabilities granted - necessary for security tools to function
+
+**Important**: These are deliberate educational choices. When deploying security tools in real environments:
+- Always use strong authentication
+- Require passwords for privileged operations
+- Follow security hardening best practices
+- Implement proper access controls
+
+- The container runs with limited capabilities by default (NET_ADMIN, NET_RAW only)
 - Network access is configured for safety
 - For advanced network testing, you may need to enable privileged mode (use cautiously)
 
